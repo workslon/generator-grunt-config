@@ -1,8 +1,3 @@
-# generator-grunt-config [![Build Status](https://secure.travis-ci.org/workslon/generator-grunt-config.png?branch=master)](https://travis-ci.org/workslon/generator-grunt-config)
-
-> [Yeoman](http://yeoman.io) generator
-
-
 ## Getting Started
 
 ### What is Yeoman?
