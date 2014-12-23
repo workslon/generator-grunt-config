@@ -1,5 +1,28 @@
 {
-  "name": "package",
-  "version": "0.0.0",
-  "dependencies": {}
+  "name": "T01",
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "devDependencies": {
+    "grunt": "latest",
+    "glob": "~3.2.1",
+
+    "grunt-contrib-clean": "latest",
+    "grunt-contrib-coffee": "latest",
+    "grunt-contrib-imagemin": "latest",
+    "grunt-contrib-concat": "latest",
+    "grunt-contrib-copy": "latest",
+    "grunt-contrib-jade": "latest",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-less": "latest",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-newer": "^0.8.0",
+    "grunt-remove-logging": "^0.2.0",
+    "grunt-wrap": "^0.3.0",
+    "grunt-coffeelint": "latest",
+    "load-grunt-config": "latest"
+  },
+  "dependencies": {
+    "time-grunt": "^1.0.0"
+  }
 }

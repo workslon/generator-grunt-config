@@ -23,24 +23,24 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
       name: 'tasks',
       message: 'Choose required tasks',
       choices: [
-        'jade',
-        'less',
-        'coffee',
-        'concat',
-        'imagemin',
-        'watch',
-        'clean',
-        'copy',
-        'coffeelint',
-        'wrap'
+        'grunt-contrib-jade',
+        'grunt-contrib-less',
+        'grunt-contrib-coffee',
+        'grunt-contrib-concat',
+        'grunt-contrib-imagemin',
+        'grunt-contrib-watch',
+        'grunt-contrib-clean',
+        'grunt-contrib-copy',
+        'grunt-coffeelint',
+        'grunt-wrap'
       ],
       default: [
-        'jade',
-        'less',
-        'coffee',
-        'concat',
-        'imagemin',
-        'watch'
+        'grunt-contrib-jade',
+        'grunt-contrib-less',
+        'grunt-contrib-coffee',
+        'grunt-contrib-concat',
+        'grunt-contrib-imagemin',
+        'grunt-contrib-watch',
         ]
     }];
 
@@ -53,6 +53,8 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
   writing: {
     app: function () {
       var gruntDir = 'grunt',
+          pkg,
+          pkgPath,
           taskPath,
           defaultAlias;
 
@@ -63,27 +65,49 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
         this.gruntfilePath
       );
 
+      // manage package.json
+      pkgPath = this.destinationPath('package.json');
+
+      if (fs.existsSync(pkgPath)) {
+        pkg = require(pkgPath);
+      } else {
+        pkg = {
+          name: 'project',
+          engines: {
+            node: '>= 0.10.0'
+          },
+          devDependencies: {
+            grunt: 'latest'
+          },
+          dependencies: {
+            'time-grunt': "latest"
+          }
+        };
+      }
+
       // create grunt directory
       fs.mkdir(this.destinationPath('grunt'), (function () {
-        console.log('Next tasks were added\n');
+        this.tasks.forEach((function (task) {
+          // create grunt task files
+          taskPath = path.join(gruntDir, task.replace(/^.*-/, '') + '.coffee');
+          fs.writeFile(taskPath, 'module.exports = (grunt) ->');
+
+          // collect dev dependencies
+          pkg.devDependencies[task] = 'latest';
+        }).bind(this));
+
+        // add new dependencies to package.json
+        fs.writeFile(pkgPath, JSON.stringify(pkg));
 
         // create aliases
         defaultAlias = {default: this.tasks};
         fs.writeFile(this.destinationPath('grunt/aliases.yaml'), JSON.stringify(defaultAlias));
-
-        // create grunt task files
-        this.tasks.forEach(function (task) {
-          taskPath = path.join(gruntDir, task + '.coffee');
-          fs.writeFile(taskPath, 'module.exports = (grunt) ->', function () {
-            console.log(taskPath);
-          });
-        });
       }).bind(this));
     }
   },
 
   end: function () {
-    console.log('\nThat\'s it my friend!\n');
+    this.npmInstall();
   }
 });
 
