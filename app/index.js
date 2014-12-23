@@ -26,6 +26,8 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
         'grunt-contrib-jade',
         'grunt-contrib-less',
         'grunt-contrib-coffee',
+        'grunt-contrib-coffee',
+        'grunt-contrib-uglify',
         'grunt-contrib-concat',
         'grunt-contrib-imagemin',
         'grunt-contrib-watch',
@@ -77,7 +79,9 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
             node: '>= 0.10.0'
           },
           devDependencies: {
-            grunt: 'latest'
+            'grunt': 'latest',
+            'grunt-newer': 'latest',
+            'load-grunt-config': 'latest'
           },
           dependencies: {
             'time-grunt': "latest"
