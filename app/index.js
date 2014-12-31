@@ -124,7 +124,7 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
   },
 
   end: function () {
-    this.task && this.npmInstall();
+    this.tasks && this.npmInstall();
   }
 });
 
