@@ -1,3 +1,7 @@
+# generator-grunt-config
+
+> Adds grunt automation to your project
+
 ## Getting Started
 
 ```bash
