@@ -118,7 +118,7 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
 
         // create aliases
         defaultAlias = {default: this.tasks};
-        fs.writeFile(this.destinationPath('grunt/aliases.yaml'), JSON.stringify(defaultAlias));
+        fs.writeFile(this.destinationPath('grunt/aliases.json'), JSON.stringify(defaultAlias));
       }).bind(this));
     }
   },
