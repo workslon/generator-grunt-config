@@ -7,7 +7,54 @@ var fs = require('fs');
 
 var GruntConfigGenerator = yeoman.generators.Base.extend({
   initializing: function () {
-    this.pkg = require('../package.json');
+
+    this.initGruntfile = function () {
+      var gruntfilePath = this.destinationPath('Gruntfile.coffee');
+
+      this.fs.copy(
+        this.templatePath('_gruntfile.coffee'),
+        gruntfilePath
+      );
+    };
+
+    this.getBasePackage = function () {
+      var pkgPath = this.destinationPath('package.json'),
+          defaults = {
+            name: 'project',
+            engines: {
+              node: '>= 0.10.0'
+            },
+            devDependencies: {
+              'grunt': 'latest',
+              'grunt-newer': 'latest',
+              'load-grunt-config': 'latest'
+            },
+            dependencies: {
+              'time-grunt': 'latest'
+            }
+          },
+          pkg = defaults;
+
+      // add non-existent properties to package.json
+      // if package.json already exists
+      if (fs.existsSync(pkgPath)) {
+        pkg = require(pkgPath);
+
+        (function recurse(defaults, pkg) {
+          for (var key in defaults) {
+            if (!pkg[key]) {
+              pkg[key] = defaults[key];
+            } else {
+              if (Object.prototype.toString.call(pkg[key]) === '[object Object]') {
+                recurse(defaults[key], pkg[key]);
+              }
+            }
+          }
+        })(defaults, pkg);
+      }
+
+      return pkg;
+    }
   },
 
   prompting: function () {
@@ -26,7 +73,6 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
         'grunt-contrib-jade',
         'grunt-contrib-less',
         'grunt-contrib-coffee',
-        'grunt-contrib-coffee',
         'grunt-contrib-uglify',
         'grunt-contrib-concat',
         'grunt-contrib-imagemin',
@@ -36,14 +82,7 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
         'grunt-coffeelint',
         'grunt-wrap'
       ],
-      default: [
-        'grunt-contrib-jade',
-        'grunt-contrib-less',
-        'grunt-contrib-coffee',
-        'grunt-contrib-concat',
-        'grunt-contrib-imagemin',
-        'grunt-contrib-watch',
-        ]
+      default: []
     }];
 
     this.prompt(prompts, function (props) {
@@ -60,34 +99,8 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
           taskPath,
           defaultAlias;
 
-      // copy gruntfile template
-      this.gruntfilePath = this.destinationPath('Gruntfile.coffee');
-      this.fs.copy(
-        this.templatePath('_gruntfile.coffee'),
-        this.gruntfilePath
-      );
-
-      // manage package.json
-      pkgPath = this.destinationPath('package.json');
-
-      if (fs.existsSync(pkgPath)) {
-        pkg = require(pkgPath);
-      } else {
-        pkg = {
-          name: 'project',
-          engines: {
-            node: '>= 0.10.0'
-          },
-          devDependencies: {
-            'grunt': 'latest',
-            'grunt-newer': 'latest',
-            'load-grunt-config': 'latest'
-          },
-          dependencies: {
-            'time-grunt': "latest"
-          }
-        };
-      }
+      this.initGruntfile();
+      pkg = this.getBasePackage();
 
       // create grunt directory
       fs.mkdir(this.destinationPath('grunt'), (function () {
@@ -101,7 +114,7 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
         }).bind(this));
 
         // add new dependencies to package.json
-        fs.writeFile(pkgPath, JSON.stringify(pkg));
+        fs.writeFile(this.destinationPath('package.json'), JSON.stringify(pkg));
 
         // create aliases
         defaultAlias = {default: this.tasks};
@@ -111,7 +124,7 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
   },
 
   end: function () {
-    this.npmInstall();
+    this.task && this.npmInstall();
   }
 });
 
