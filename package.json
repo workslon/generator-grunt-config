@@ -20,7 +20,7 @@
     "app"
   ],
   "keywords": [
-    "yeoman-generator"
+    "yeoman-generator, grunt, gruntfile, grunt tasks, automation"
   ],
   "dependencies": {
     "yeoman-generator": "^0.18.0",
