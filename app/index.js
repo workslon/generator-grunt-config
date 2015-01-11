@@ -7,7 +7,6 @@ var fs = require('fs');
 
 var GruntConfigGenerator = yeoman.generators.Base.extend({
   initializing: function () {
-
     this.initGruntfile = function () {
       var gruntfilePath = this.destinationPath('Gruntfile.coffee');
 
@@ -34,6 +33,7 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
             }
           },
           pkg = defaults;
+
 
       // add non-existent properties to package.json
       // if package.json already exists
@@ -97,12 +97,17 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
           pkg,
           pkgPath,
           taskPath,
-          defaultAlias;
+          defaultAliases;
 
       this.initGruntfile();
       pkg = this.getBasePackage();
 
       // create grunt directory
+      if (fs.existsSync(this.destinationPath('grunt'))) {
+        this.isGruntDirExists = true;
+        return console.log('`grunt` directory is already exist!');
+      }
+
       fs.mkdir(this.destinationPath('grunt'), (function () {
         this.tasks.forEach((function (task) {
           // create grunt task files
@@ -117,18 +122,18 @@ var GruntConfigGenerator = yeoman.generators.Base.extend({
         fs.writeFile(this.destinationPath('package.json'), JSON.stringify(pkg));
 
         // create aliases
-        defaultAliases = {default: []};
+        defaultAliases = {'default': []};
         this.tasks.forEach(function (task) {
           var taskname = task.replace(/^.*-/, '');
-          defaultAliases[default].push(taskname);
+          defaultAliases['default'].push(taskname);
         });
-        fs.writeFile(this.destinationPath('grunt/aliases.json'), JSON.stringify(defaultAlias));
+        fs.writeFile(this.destinationPath('grunt/aliases.json'), JSON.stringify(defaultAliases));
       }).bind(this));
     }
   },
 
   end: function () {
-    this.tasks && this.npmInstall();
+    !this.isGruntDirExists && this.tasks && this.npmInstall();
   }
 });
 
