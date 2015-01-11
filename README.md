@@ -11,7 +11,7 @@ npm install -g yo
 To install generator-grunt-config from npm, run:
 
 ```bash
-npm install -g https://github.com/workslon/generator-grunt-config.git
+npm install -g workslon/generator-grunt-config
 ```
 
 Finally, initiate the generator:
